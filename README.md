@@ -1,10 +1,10 @@
-# Dextor README
+# TexDor README
 
 - [ ] TODO Replace or update this README with instructions relevant to your application
 
 ## Project Structure
 
-The sources of your Dextor have the following structure:
+The sources of your TexDor have the following structure:
 
 ```
 src
@@ -25,33 +25,33 @@ src
 │       │   │   └── TaskListView.java
 │       │   ├── Task.java
 │       │   ├── TaskRepository.java
-│       │   └── TaskService.java                
-│       └── Application.java       
+│       │   └── TaskService.java
+│       └── Application.java
 └── test/java
     └── [application package]
         └── examplefeature
-           └── TaskServiceTest.java                 
+           └── TaskServiceTest.java
 ```
 
-The main entry point into the application is `Application.java`. This class contains the `main()` method that start up 
+The main entry point into the application is `Application.java`. This class contains the `main()` method that start up
 the Spring Boot application.
 
-The skeleton follows a *feature-based package structure*, organizing code by *functional units* rather than traditional 
+The skeleton follows a _feature-based package structure_, organizing code by _functional units_ rather than traditional
 architectural layers. It includes two feature packages: `base` and `examplefeature`.
 
-* The `base` package contains classes meant for reuse across different features, either through composition or 
+- The `base` package contains classes meant for reuse across different features, either through composition or
   inheritance. You can use them as-is, tweak them to your needs, or remove them.
-* The `examplefeature` package is an example feature package that demonstrates the structure. It represents a 
-  *self-contained unit of functionality*, including UI components, business logic, data access, and an integration test.
-  Once you create your own features, *you'll remove this package*.
+- The `examplefeature` package is an example feature package that demonstrates the structure. It represents a
+  _self-contained unit of functionality_, including UI components, business logic, data access, and an integration test.
+  Once you create your own features, _you'll remove this package_.
 
 The `src/main/frontend` directory contains an empty theme called `default`, based on the Lumo theme. It is activated in
 the `Application` class, using the `@Theme` annotation.
 
 ## Starting in Development Mode
 
-To start the application in development mode, import it into your IDE and run the `Application` class. 
-You can also start the application from the command line by running: 
+To start the application in development mode, import it into your IDE and run the `Application` class.
+You can also start the application from the command line by running:
 
 ```bash
 ./mvnw
@@ -80,6 +80,6 @@ docker build --secret id=proKey,src=$HOME/.vaadin/proKey .
 ## Getting Started
 
 The [Getting Started](https://vaadin.com/docs/latest/getting-started) guide will quickly familiarize you with your new
-Dextor implementation. You'll learn how to set up your development environment, understand the project 
-structure, and find resources to help you add muscles to your skeleton — transforming it into a fully-featured 
+TexDor implementation. You'll learn how to set up your development environment, understand the project
+structure, and find resources to help you add muscles to your skeleton — transforming it into a fully-featured
 application.

@@ -4,6 +4,7 @@
     <!-- Project from https://start.vaadin.com/6a66be59-13b9-4c43-9089-bece84c3fd3b -->
     <groupId>com.dextor</groupId>
     <artifactId>dextor</artifactId>
+    <name>Dextor</name>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     
