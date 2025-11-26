@@ -8,10 +8,13 @@ import com.dextor.inventory.InventoryItem;
 import com.dextor.inventory.InventoryService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -108,6 +111,20 @@ public class HomeView extends Main {
         inventoryGrid.addColumn(InventoryItem::getDescription).setHeader("Description").setAutoWidth(true);
         inventoryGrid.addColumn(InventoryItem::getQuantity).setHeader("Quantity").setAutoWidth(true);
         inventoryGrid.addColumn(item -> currencyFormatter.format(item.getPrice())).setHeader("Price").setAutoWidth(true);
+        
+        // Actions column
+        inventoryGrid.addComponentColumn(item -> {
+            Button editButton = new Button(VaadinIcon.EDIT.create(), event -> openEditDialog(item));
+            editButton.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_TERTIARY);
+            editButton.setAriaLabel("Edit item");
+            
+            Button deleteButton = new Button(VaadinIcon.TRASH.create(), event -> confirmDelete(item));
+            deleteButton.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
+            deleteButton.setAriaLabel("Delete item");
+            
+            return new HorizontalLayout(editButton, deleteButton);
+        }).setHeader("Actions").setAutoWidth(true).setFlexGrow(0);
+        
         inventoryGrid.setSizeFull();
 
         setSizeFull();
@@ -179,6 +196,99 @@ public class HomeView extends Main {
         itemDescription.clear();
         itemQuantity.setValue(0.0);
         itemPrice.setValue(0.0);
+    }
+
+    private void openEditDialog(InventoryItem item) {
+        Dialog dialog = new Dialog();
+        dialog.setHeaderTitle("Edit Item");
+        dialog.setWidth("500px");
+
+        // Create form fields for editing
+        TextField editName = new TextField("Item Name");
+        editName.setValue(item.getName());
+        editName.setMaxLength(InventoryItem.NAME_MAX_LENGTH);
+        editName.setRequired(true);
+        editName.setWidthFull();
+
+        TextArea editDescription = new TextArea("Description");
+        editDescription.setValue(item.getDescription() != null ? item.getDescription() : "");
+        editDescription.setMaxLength(InventoryItem.DESCRIPTION_MAX_LENGTH);
+        editDescription.setWidthFull();
+
+        NumberField editQuantity = new NumberField("Quantity");
+        editQuantity.setValue(item.getQuantity().doubleValue());
+        editQuantity.setMin(0);
+        editQuantity.setStep(1);
+        editQuantity.setRequired(true);
+        editQuantity.setWidthFull();
+
+        NumberField editPrice = new NumberField("Price");
+        editPrice.setValue(item.getPrice());
+        editPrice.setMin(0);
+        editPrice.setStep(0.01);
+        editPrice.setRequired(true);
+        editPrice.setPrefixComponent(new Span("$"));
+        editPrice.setWidthFull();
+
+        VerticalLayout formLayout = new VerticalLayout(editName, editDescription, editQuantity, editPrice);
+        formLayout.setPadding(false);
+        formLayout.setSpacing(true);
+
+        dialog.add(formLayout);
+
+        // Dialog buttons
+        Button saveButton = new Button("Save", event -> {
+            if (editName.isEmpty() || editQuantity.isEmpty() || editPrice.isEmpty()) {
+                Notification.show("Please fill in all required fields", 3000, Notification.Position.BOTTOM_END)
+                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
+                return;
+            }
+
+            try {
+                item.setName(editName.getValue());
+                item.setDescription(editDescription.getValue().isEmpty() ? null : editDescription.getValue());
+                item.setQuantity(editQuantity.getValue().intValue());
+                item.setPrice(editPrice.getValue());
+
+                inventoryService.updateItem(item);
+                inventoryGrid.getDataProvider().refreshAll();
+                updateStatistics();
+
+                Notification.show("Item updated successfully", 3000, Notification.Position.BOTTOM_END)
+                        .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+
+                dialog.close();
+            } catch (IllegalArgumentException e) {
+                Notification.show("Error: " + e.getMessage(), 3000, Notification.Position.BOTTOM_END)
+                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
+            }
+        });
+        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        Button cancelButton = new Button("Cancel", event -> dialog.close());
+
+        dialog.getFooter().add(cancelButton, saveButton);
+        dialog.open();
+    }
+
+    private void confirmDelete(InventoryItem item) {
+        ConfirmDialog confirmDialog = new ConfirmDialog();
+        confirmDialog.setHeader("Delete Item");
+        confirmDialog.setText("Are you sure you want to delete \"" + item.getName() + "\"? This action cannot be undone.");
+        confirmDialog.setCancelable(true);
+        confirmDialog.setConfirmText("Delete");
+        confirmDialog.setConfirmButtonTheme("error primary");
+
+        confirmDialog.addConfirmListener(event -> {
+            inventoryService.deleteItem(item.getId());
+            inventoryGrid.getDataProvider().refreshAll();
+            updateStatistics();
+
+            Notification.show("Item deleted successfully", 3000, Notification.Position.BOTTOM_END)
+                    .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+        });
+
+        confirmDialog.open();
     }
 }
 
