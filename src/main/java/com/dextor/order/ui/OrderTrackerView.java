@@ -115,7 +115,7 @@ public class OrderTrackerView extends Main {
         orderGrid.addColumn(Order::getItemName).setHeader("Item").setAutoWidth(true);
         orderGrid.addColumn(Order::getQuantity).setHeader("Quantity").setAutoWidth(true);
         orderGrid.addColumn(order -> currencyFormatter.format(order.getTotalPrice())).setHeader("Total Price").setAutoWidth(true);
-        orderGrid.addColumn(order -> order.getStatus().getDisplayName()).setHeader("Status").setAutoWidth(true);
+        orderGrid.addComponentColumn(order -> createStatusBadge(order.getStatus())).setHeader("Status").setAutoWidth(true);
         orderGrid.addColumn(order -> dateTimeFormatter.format(order.getOrderDate())).setHeader("Order Date").setAutoWidth(true);
         orderGrid.addComponentColumn(order -> createStatusSelector(order)).setHeader("Update Status").setAutoWidth(true);
         orderGrid.setSizeFull();
@@ -157,14 +157,47 @@ public class OrderTrackerView extends Main {
         return card;
     }
 
+    private Span createStatusBadge(OrderStatus status) {
+        Span badge = new Span(status.getDisplayName());
+        badge.getElement().getThemeList().add("badge");
+        
+        // Add color based on status
+        switch (status) {
+            case PENDING:
+                badge.getElement().getThemeList().add("warning");
+                break;
+            case PROCESSING:
+                badge.getElement().getThemeList().add("primary");
+                break;
+            case SHIPPED:
+                badge.getElement().getThemeList().add("contrast");
+                break;
+            case DELIVERED:
+                badge.getElement().getThemeList().add("success");
+                break;
+            case CANCELLED:
+                badge.getElement().getThemeList().add("error");
+                break;
+        }
+        
+        return badge;
+    }
+
     private ComboBox<OrderStatus> createStatusSelector(Order order) {
         var statusComboBox = new ComboBox<OrderStatus>();
         statusComboBox.setItems(OrderStatus.values());
         statusComboBox.setItemLabelGenerator(OrderStatus::getDisplayName);
         statusComboBox.setValue(order.getStatus());
+        
+        // Add color-coded renderer for dropdown items
+        statusComboBox.setRenderer(new com.vaadin.flow.data.renderer.ComponentRenderer<>(status -> {
+            return createStatusBadge(status);
+        }));
+        
         statusComboBox.addValueChangeListener(event -> {
             if (event.getValue() != null) {
                 orderService.updateOrderStatus(order, event.getValue());
+                orderGrid.getDataProvider().refreshAll();
                 Notification.show("Status updated", 2000, Notification.Position.BOTTOM_END)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             }
