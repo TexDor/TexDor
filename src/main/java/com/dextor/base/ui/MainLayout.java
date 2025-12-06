@@ -2,9 +2,9 @@ package com.dextor.base.ui;
 
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
@@ -16,10 +16,8 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Display;
 import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
 import com.vaadin.flow.theme.lumo.LumoUtility.FontWeight;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
-import com.vaadin.flow.theme.lumo.LumoUtility.IconSize;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
-import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
 
 @Layout
 public final class MainLayout extends AppLayout {
@@ -30,9 +28,10 @@ public final class MainLayout extends AppLayout {
     }
 
     private Div createHeader() {
-        // TODO Replace with real application logo and name
-        var appLogo = VaadinIcon.CUBES.create();
-        appLogo.addClassNames(TextColor.PRIMARY, IconSize.LARGE);
+        var appLogo = new Image("themes/default/images/logo.png", "TexDor Logo");
+        appLogo.setHeight("40px");
+        appLogo.setWidth("40px");
+        appLogo.getStyle().set("border-radius", "50%"); // Make it circular
 
         var appName = new Span("TexDor");
         appName.addClassNames(FontWeight.SEMIBOLD, FontSize.LARGE);
