@@ -59,3 +59,15 @@ You can also start the application from the command line by running:
 ```
 
 The application will be available at `http://localhost:8080` once started.
+
+## Running Tests
+
+The project includes unit tests for all service layers (Inventory, Order, and Sales).
+
+### Run All Tests
+
+To run all tests in the project:
+
+```bash
+./mvnw test
+```
