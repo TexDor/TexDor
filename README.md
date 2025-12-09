@@ -1,7 +1,5 @@
 # TexDor README
 
-- [ ] TODO Replace or update this README with instructions relevant to your application
-
 ## Project Structure
 
 The sources of your TexDor have the following structure:
@@ -36,19 +34,22 @@ src
 The main entry point into the application is `Application.java`. This class contains the `main()` method that start up
 the Spring Boot application.
 
-The skeleton follows a _feature-based package structure_, organizing code by _functional units_ rather than traditional
-architectural layers. It includes two feature packages: `base` and `examplefeature`.
+## Database Configuration
 
-- The `base` package contains classes meant for reuse across different features, either through composition or
-  inheritance. You can use them as-is, tweak them to your needs, or remove them.
-- The `examplefeature` package is an example feature package that demonstrates the structure. It represents a
-  _self-contained unit of functionality_, including UI components, business logic, data access, and an integration test.
-  Once you create your own features, _you'll remove this package_.
+Before running the project, you must first configure the database connection. The system currently uses default settings, so you should navigate to the `src/main/resources/application.properties` file and locate the **MySQL Database Configuration** section.
 
-The `src/main/frontend` directory contains an empty theme called `default`, based on the Lumo theme. It is activated in
-the `Application` class, using the `@Theme` annotation.
+Update the following fields with your own MySQL credentials:
+
+```properties
+spring.datasource.username=your_mysql_username
+spring.datasource.password=your_mysql_password
+```
+
+Make sure your MySQL server is running and the database specified in the configuration exists.
 
 ## Starting in Development Mode
+
+Once the database is properly configured (see Database Configuration section above), you can start the entire project.
 
 To start the application in development mode, import it into your IDE and run the `Application` class.
 You can also start the application from the command line by running:
@@ -57,29 +58,4 @@ You can also start the application from the command line by running:
 ./mvnw
 ```
 
-## Building for Production
-
-To build the application in production mode, run:
-
-```bash
-./mvnw -Pproduction package
-```
-
-To build a Docker image, run:
-
-```bash
-docker build -t my-application:latest .
-```
-
-If you use commercial components, pass the license key as a build secret:
-
-```bash
-docker build --secret id=proKey,src=$HOME/.vaadin/proKey .
-```
-
-## Getting Started
-
-The [Getting Started](https://vaadin.com/docs/latest/getting-started) guide will quickly familiarize you with your new
-TexDor implementation. You'll learn how to set up your development environment, understand the project
-structure, and find resources to help you add muscles to your skeleton — transforming it into a fully-featured
-application.
+The application will be available at `http://localhost:8080` once started.
